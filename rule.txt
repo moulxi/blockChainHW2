@@ -1,0 +1,8 @@
+1. You have "random()" function to get a random number.
+2. The person (address) who established the contract acts as the banker, and cannot participate in the bet lottery.
+3. Others (other addresses) can call the function to spend a fixed amount of 100 tokens to buy a lottery ticket. Of course, players can also buy multiple times to increase the winning rate.
+4. Only the banker can call the Draw function to randomly select one lottery ticket buyer as the lottery winner. The winner can get 90% of the ticket revenue as a bonus. For instance, suppose a total number of 8 tickets were sold. Therefore, the winner can get 720 tokens from the banker.
+5. After the draw, the banker can’t call the function again within 2 mins.
+6. At least one lottery ticket must be sold. Otherwise, the function can’t be executed.
+7. Everyone can call the getAllPlayers function to see the addresses of all lottery ticket buyers.
+8. Using a variable to store the winner’s address so that everyone can see the winner of the lottery game.
