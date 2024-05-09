@@ -154,16 +154,15 @@ contract myToken is ERC20Interface, SafeMath
         balances[winner] = safeAdd(balances[winner], prize);
 
         delete players;
-        drawTime = block.timestamp;
     }
 
     function getAllPlayers() public returns (address[] memory)
     {
         delete nonReapeat;
-        bool exist = false;
-
+       
         for(uint i = 0; i < players.length; i++)
         {
+			bool exist = false;
             for(uint j = 0; j < nonReapeat.length; j++)
             {
                 if(players[i] == nonReapeat[j])
