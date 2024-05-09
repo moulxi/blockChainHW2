@@ -52,16 +52,6 @@ contract myToken is ERC20Interface, SafeMath
     mapping(address => uint256) lastCalledLoto;
     address public contractCreator;
 
-    // Lottery variables
-    address public manager;
-    address[] public players;
-    address[] private nonReapeat;
-    address public winner;
-    uint public drawTime;
-    uint public ticketPrice = 100;
-    uint public prizePercentage = 90;
-    uint public cooldown = 2 minutes;
-
     constructor()
     {
         name = "myToken";
@@ -71,10 +61,6 @@ contract myToken is ERC20Interface, SafeMath
         balances[msg.sender] = _totalSupply;
         emit Transfer(address(0), msg.sender, _totalSupply);
         contractCreator = msg.sender;
-
-        // Lottery initialization
-        manager = msg.sender;
-        drawTime = 0;
     }
 
     function totalSupply() public view override returns (uint)
@@ -114,69 +100,5 @@ contract myToken is ERC20Interface, SafeMath
         balances[to] = safeAdd(balances[to], tokens);
         emit Transfer(from, to, tokens);
         return true;
-    }
-
-    function faucet() public returns (bool success)
-    {
-        require(block.timestamp >= lastCalled[msg.sender] + 30 seconds, "You must wait 30 minutes between calls");
-        lastCalled[msg.sender] = block.timestamp;
-        balances[contractCreator] = safeSub(balances[contractCreator], 500);
-        balances[msg.sender] = safeAdd(balances[msg.sender], 500);
-        return true;
-    }
-
-    // Lottery functions
-    function enter() public
-    {
-        require(balances[msg.sender] >= ticketPrice, "Insufficient balance to enter");
-        require(msg.sender != manager, "Manager cannot participate");
-        balances[msg.sender] = safeSub(balances[msg.sender], ticketPrice);
-        players.push(msg.sender);
-    }
-
-    function random() private view returns (uint)
-    {
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
-    }
-
-    function draw() public
-    {
-        require(msg.sender == contractCreator, "Only contractCreator can draw");
-        require(block.timestamp >= lastCalledLoto[msg.sender] + 2 minutes, "You must wait 2 min");
-        //require(block.timestamp >= drawTime + cooldown, "Cannot draw within 2 minutes");
-        require(players.length > 0, "At least one player is required");
-
-        lastCalledLoto[msg.sender] = block.timestamp;
-        uint index = random() % players.length;
-        winner = players[index];
-
-        uint prize = safeMul(ticketPrice, players.length) * prizePercentage / 100;
-        balances[winner] = safeAdd(balances[winner], prize);
-
-        delete players;
-        drawTime = block.timestamp;
-    }
-
-    function getAllPlayers() public returns (address[] memory)
-    {
-        delete nonReapeat;
-        bool exist = false;
-
-        for(uint i = 0; i < players.length; i++)
-        {
-            for(uint j = 0; j < nonReapeat.length; j++)
-            {
-                if(players[i] == nonReapeat[j])
-                {
-                    exist = true;
-                    break;
-                }
-            }
-            if(exist == false)
-            {
-                nonReapeat.push(players[i]);
-            }
-        }
-        return nonReapeat;
     }
 }
